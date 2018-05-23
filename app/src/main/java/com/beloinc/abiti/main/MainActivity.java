@@ -14,7 +14,10 @@ import com.beloinc.abiti.utils.PhotosDatabase;
 
 public class MainActivity extends AppCompatActivity implements RecyclerGridFragment.OnPublicationSelected {
 
+    //TAG TO TRACK LOG
     private static final String TAG = "MainActivity";
+
+    //CONSTANTS TO REFERENCE AT INTENT
     public static final String GET_LEFT_DESCRIPTION = "leftDescription";
     public static final String GET_RIGHT_DESCRIPTION = "rightDescription";
     public static final String GET_LEFT_URL = "photoLeftUrl";
@@ -34,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerGridFragm
 
         RecyclerGridFragment gridFragment = new RecyclerGridFragment();
 
+        //USING FRAGMENT TO ADD FUTURE FUNCTIONALITY
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.container, gridFragment)
                 .commit();
@@ -47,12 +51,12 @@ public class MainActivity extends AppCompatActivity implements RecyclerGridFragm
     }
 
     private void setupWidgetsClickListener(WidgetClickListener clickListener) {
-        mButton.setOnClickListener(clickListener);
+        mButton.setOnClickListener(clickListener);                          // HANDLE CLICK TO GO TO CREATION OF NEW PUBLICATION
     }
 
 
     @Override
-    public void onPublicationSelected(PhotosDatabase publication) {
+    public void onPublicationSelected(PhotosDatabase publication) {        // METHOD FROM INNER INTERFACE AT RECYCLERGRIDFRAGMENT TO HANDLE CLICKS AT A SINGLE PUBLICATION
         Intent intent = new Intent(mContext, SinglePublicationActivity.class);
         intent.putExtra(GET_LEFT_DESCRIPTION, publication.getLeftDescription());
         intent.putExtra(GET_RIGHT_DESCRIPTION, publication.getRightDescription());

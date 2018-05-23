@@ -35,6 +35,7 @@ public class SinglePublicationActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
+        // GET INFORMATION PASSED BY MAIN ACTIVITY
         String photoLeftUrl = intent.getExtras().getString(MainActivity.GET_LEFT_URL);
         String photoRightUrl = intent.getExtras().getString(MainActivity.GET_RIGHT_URL);
         String tag = intent.getExtras().getString(MainActivity.GET_TAG);

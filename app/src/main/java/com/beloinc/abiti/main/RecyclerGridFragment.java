@@ -101,7 +101,7 @@ public class RecyclerGridFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        Log.d(TAG, "onStop: fragment stopped");
+        Log.d(TAG, "onStop: fragment stopped");  //JUST TO TRACK FRAGMENT LIFECYCLE
     }
 
     @Override
@@ -109,9 +109,11 @@ public class RecyclerGridFragment extends Fragment {
         super.onDestroyView();
         Log.d(TAG, "onDestroyView: ");
         detachDatabaseReadListener();
-        clear();
+        clear();            // CLEAR RECYCLERVIEW WHEN FRAGMENT IS DESTROYED... POSSIBLE CHANGES HERE
     }
 
+
+    // ATTACH DATABASE LISTENER TO RETRIEVE INFORMATION FROM DATABASE SERVER
     private void attachDatabaseReadListener() {
         if (postListener == null) {
             Log.d(TAG, "attachDatabaseReadListener: listener attached");
@@ -120,21 +122,17 @@ public class RecyclerGridFragment extends Fragment {
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                     PhotosDatabase post = dataSnapshot.getValue(PhotosDatabase.class);
                     photosDatabaseList.add(post);
-                    mAdapter.notifyItemInserted(photosDatabaseList.size() - 1);
+                    mAdapter.notifyItemInserted(photosDatabaseList.size() - 1); //NOTIFY THE RECYCLER ADAPTER THAT NEW DATA IS BEING INSERTED
                 }
-
                 @Override
                 public void onChildChanged(DataSnapshot dataSnapshot, String s) {
                 }
-
                 @Override
                 public void onChildRemoved(DataSnapshot dataSnapshot) {
                 }
-
                 @Override
                 public void onChildMoved(DataSnapshot dataSnapshot, String s) {
                 }
-
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
                 }
