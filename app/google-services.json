@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "330250853625",
+    "firebase_url": "https://abiti-12018.firebaseio.com",
+    "project_id": "abiti-12018",
+    "storage_bucket": "abiti-12018.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:330250853625:android:f2db89621edc47a6",
+        "android_client_info": {
+          "package_name": "com.beloinc.abiti"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "330250853625-vq8f91jo8pel9m4iifvspgm7o965mlqe.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.beloinc.abiti",
+            "certificate_hash": "542eeaa374329dde2268401ea92fae5128708534"
+          }
+        },
+        {
+          "client_id": "330250853625-q5cusm6ip95m2o54md4kadshdacsg75i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB2zMmbP8tVx_PvmrJ6rMioSrBq2iliydY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "330250853625-q5cusm6ip95m2o54md4kadshdacsg75i.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
