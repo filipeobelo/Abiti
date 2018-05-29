@@ -1,37 +1,22 @@
 package com.beloinc.abiti.utils;
 
+
 public class PhotosDatabase {
 
     private String photoLeftUrl;
     private String photoRightUrl;
-    private String tag;
+    private String[] tags;
     private String leftDescription;
     private String rightDescription;
 
     public PhotosDatabase() {
     }
 
-    public PhotosDatabase(String photoLeftUrl, String photoRightUrl, String tag, String leftDescription, String rightDescription) {
+    public PhotosDatabase(String photoLeftUrl, String photoRightUrl, String[] tags, String leftDescription, String rightDescription) {
         this.photoLeftUrl = photoLeftUrl;
         this.photoRightUrl = photoRightUrl;
-        this.tag = tag;
+        this.tags = tags;
         this.leftDescription = leftDescription;
-        this.rightDescription = rightDescription;
-    }
-
-    public String getLeftDescription() {
-        return leftDescription;
-    }
-
-    public void setLeftDescription(String leftDescription) {
-        this.leftDescription = leftDescription;
-    }
-
-    public String getRightDescription() {
-        return rightDescription;
-    }
-
-    public void setRightDescription(String rightDescription) {
         this.rightDescription = rightDescription;
     }
 
@@ -43,19 +28,15 @@ public class PhotosDatabase {
         return photoRightUrl;
     }
 
-    public String getTag() {
-        return tag;
+    public String[] getTags() {
+        return tags;
     }
 
-    public void setPhotoLeftUrl(String photoLeftUrl) {
-        this.photoLeftUrl = photoLeftUrl;
+    public String getLeftDescription() {
+        return leftDescription;
     }
 
-    public void setPhotoRightUrl(String photoRightUrl) {
-        this.photoRightUrl = photoRightUrl;
-    }
-
-    public void setTag(String tag) {
-        this.tag = tag;
+    public String getRightDescription() {
+        return rightDescription;
     }
 }

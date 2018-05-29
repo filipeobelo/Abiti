@@ -3,6 +3,7 @@ package com.beloinc.abiti.upload;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -13,15 +14,27 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.beloinc.abiti.R;
-import com.beloinc.abiti.utils.PhotosDatabase;
+import com.beloinc.abiti.utils.PhotosCloudDatabase;
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class UploadActivity extends AppCompatActivity {
@@ -39,9 +52,13 @@ public class UploadActivity extends AppCompatActivity {
     private Button mUploadButton;
     private ProgressBar mProgressBar;
 
+    private String userId;
     private String mLeftDescription;
     private String mRightDescription;
-    private String mTags;
+    private String[] mTags;
+    private List<String> mTagsList = new ArrayList<>();
+    private Map<String, String> description = new HashMap<>();
+    private Map<String, String> photoUrls = new HashMap<>();
 
     //Firebase
     private FirebaseDatabase mDatabase;
@@ -57,7 +74,11 @@ public class UploadActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload);
-        Log.d(TAG, "onCreate: started upload activity");
+
+        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        Log.d(TAG, "onCreate: started upload activity. UID: " + userId);
+
 
         mStorage = FirebaseStorage.getInstance();
         mDatabase = FirebaseDatabase.getInstance();
@@ -120,7 +141,7 @@ public class UploadActivity extends AppCompatActivity {
                         Toast.makeText(UploadActivity.this, "Escolha imagens diferentes para publicar!!", Toast.LENGTH_SHORT).show();
                     } else if (mLeftDescription.isEmpty() || mRightDescription.isEmpty()) {
                         Toast.makeText(UploadActivity.this, "Faça uma descrição de cada foto!!", Toast.LENGTH_SHORT).show();
-                    } else if (mTags.isEmpty()) {
+                    } else if (mTags.length == 0) {
                         Toast.makeText(UploadActivity.this, "Coloque hashtags para melhor identifcar sua publicação", Toast.LENGTH_SHORT).show();
                     } else {
                         uploadHelper();
@@ -129,49 +150,6 @@ public class UploadActivity extends AppCompatActivity {
             }
         }
     }
-
-
-    /*private class WidgetsClickListener implements View.OnClickListener {
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()) {
-
-                //click on left image
-                case R.id.image_left:
-                    Log.d(TAG, "onClick: left image");
-                    Intent intentLeft = new Intent(Intent.ACTION_GET_CONTENT);
-                    intentLeft.setType("image/jpeg");
-                    intentLeft.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
-                    startActivityForResult(Intent.createChooser(intentLeft, "Complete action using"), RC_PHOTO_PICKER_LEFT);
-                    break;
-
-                // click on right image
-                case R.id.image_right:
-                    Log.d(TAG, "onClick: right image");
-                    Intent intentRight = new Intent(Intent.ACTION_GET_CONTENT);
-                    intentRight.setType("image/jpeg");
-                    intentRight.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
-                    startActivityForResult(Intent.createChooser(intentRight, "Complete action using"), RC_PHOTO_PICKER_RIGHT);
-                    break;
-
-                //click on upload button
-                case R.id.upload_button:
-                    Log.d(TAG, "onClick: upload button");
-                    getEditTexts();
-                    if (selectedLeftUrl == null || selectedRightUrl == null) {
-                        Toast.makeText(UploadActivity.this, "Não esqueça de selecionar as duas fotos :)", Toast.LENGTH_SHORT).show();
-                    } else if (mLeftDescription.isEmpty() || mRightDescription.isEmpty()) {
-                        Toast.makeText(UploadActivity.this, "Faça uma descrição de cada foto!!", Toast.LENGTH_SHORT).show();
-                    } else if (mTags.isEmpty()) {
-                        Toast.makeText(UploadActivity.this, "Coloque hashtags para melhor identifcar sua publicação", Toast.LENGTH_SHORT).show();
-                    } else {
-                        uploadHelper();
-                    }
-                    break;
-            }
-        }
-
-    }*/
 
 
     @Override
@@ -194,11 +172,107 @@ public class UploadActivity extends AppCompatActivity {
     private void getEditTexts() {
         mLeftDescription = mLeftText.getText().toString();
         mRightDescription = mRightText.getText().toString();
-        mTags = mTagsText.getText().toString();
+        mTags = mTagsText.getText().toString().split(" ");
+        mTagsList = Arrays.asList(mTags);
+        description.put("leftDescription", mLeftDescription);
+        description.put("rightDescription", mRightDescription);
     }
 
 
     private void uploadHelper() {
+        String pathLeft = "user_photos/" + UUID.randomUUID();
+        final StorageReference mLeftPhotoReference = mStorage.getReference(pathLeft);
+
+        setupProgress(true);
+
+        UploadTask uploadTaskLeft = mLeftPhotoReference.putFile(selectedLeftUrl);
+        Task<Uri> urlLeftTask = uploadTaskLeft.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+            @Override
+            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                if (!task.isSuccessful()) {
+                    throw task.getException();
+                }
+                return mLeftPhotoReference.getDownloadUrl();
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task) {
+                if (task.isSuccessful()) {
+                    Log.d(TAG, "onComplete: left image uploaded successfully");
+
+                    downloadLeftUrl = task.getResult();
+                    photoUrls.put("leftUrl", downloadLeftUrl.toString());
+
+                    //Starting right image upload:
+                    String pathRight = "user_photos/" + UUID.randomUUID();
+                    final StorageReference mRightPhotoReference = mStorage.getReference(pathRight);
+                    UploadTask uploadTaskRight = mRightPhotoReference.putFile(selectedRightUrl);
+                    Task<Uri> urlRightTask = uploadTaskRight.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                        @Override
+                        public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                            if (!task.isSuccessful()) {
+                                throw task.getException();
+                            }
+                            return mRightPhotoReference.getDownloadUrl();
+                        }
+                    }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Uri> task) {
+                            if (task.isSuccessful()) {
+                                Log.d(TAG, "onComplete: right image uploaded successfully");
+
+                                downloadRightUrl = task.getResult();
+                                photoUrls.put("rightUrl", downloadRightUrl.toString());
+
+                                PhotosCloudDatabase photosCloudDatabase = new PhotosCloudDatabase(photoUrls, description, mTagsList, userId);
+                                for (int i = 0; i < mTagsList.size(); i++) {
+                                    sendToCloud(photosCloudDatabase, mTagsList.get(i));
+                                }
+
+                            } else {
+                                Toast.makeText(UploadActivity.this, "Upload da publicação falhou, tente novamente.", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                } else {
+                    Toast.makeText(UploadActivity.this, "Upload da publicação falhou, tente novamente.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    private void sendToCloud(PhotosCloudDatabase photosCloudDatabase, String collectionPath) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("publications").document("tags").collection(collectionPath)
+                .add(photosCloudDatabase)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d(TAG, "onSuccess: Document written with ID: " + documentReference.getId());
+                        setupProgress(false);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "onFailure: error adding document" + e);
+                        setupProgress(false);
+                    }
+                });
+    }
+
+    private void setupProgress(Boolean progress) {
+        if (progress) {
+            mProgressBar.setVisibility(View.VISIBLE);
+            mUploadButton.setEnabled(false);
+        } else {
+            mProgressBar.setVisibility(View.GONE);
+            mUploadButton.setEnabled(true);
+        }
+    }
+}
+
+    /*private void uploadHelper() {
         String pathLeft = "user_photos/" + UUID.randomUUID();
         StorageReference mLeftPhotoReference = mStorage.getReference(pathLeft);
         mProgressBar.setVisibility(View.VISIBLE);
@@ -219,7 +293,7 @@ public class UploadActivity extends AppCompatActivity {
                 uploadTaskRight.addOnSuccessListener(UploadActivity.this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        Log.d(TAG, "onSuccess: right photo uploaded succesfully");
+                        Log.d(TAG, "onSuccess: right photo uploaded successfully");
                         downloadRightUrl = taskSnapshot.getDownloadUrl();
                         PhotosDatabase photosDatabase = new PhotosDatabase(downloadLeftUrl.toString(), downloadRightUrl.toString(), mTags, mLeftDescription, mRightDescription);
                         mPhotosUrlReference.push().setValue(photosDatabase);
@@ -229,5 +303,5 @@ public class UploadActivity extends AppCompatActivity {
                 });
             }
         });
-    }
-}
+    }*/
+

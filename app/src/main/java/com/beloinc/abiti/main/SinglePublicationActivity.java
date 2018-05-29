@@ -14,6 +14,7 @@ import com.beloinc.abiti.R;
 import com.beloinc.abiti.upload.UploadActivity;
 import com.bumptech.glide.Glide;
 
+
 public class SinglePublicationActivity extends AppCompatActivity {
 
     private static final String TAG = "SinglePublicationActivi";
@@ -38,7 +39,6 @@ public class SinglePublicationActivity extends AppCompatActivity {
         // GET INFORMATION PASSED BY MAIN ACTIVITY
         String photoLeftUrl = intent.getExtras().getString(MainActivity.GET_LEFT_URL);
         String photoRightUrl = intent.getExtras().getString(MainActivity.GET_RIGHT_URL);
-        String tag = intent.getExtras().getString(MainActivity.GET_TAG);
         String leftDescription = intent.getExtras().getString(MainActivity.GET_LEFT_DESCRIPTION);
         String rightDescription = intent.getExtras().getString(MainActivity.GET_RIGHT_DESCRIPTION);
 

@@ -56,7 +56,7 @@ public class CardContainerAdapter extends RecyclerView.Adapter<CardContainerAdap
         //widgets
         ImageView leftImage = cardView.findViewById(R.id.image_left);
         ImageView rightImage = cardView.findViewById(R.id.image_right);
-        TextView tagsView = cardView.findViewById(R.id.text_tags);
+        //TextView tagsView = cardView.findViewById(R.id.text_tags);
 
         //widgets attribution
         Glide.with(leftImage.getContext())
@@ -66,7 +66,7 @@ public class CardContainerAdapter extends RecyclerView.Adapter<CardContainerAdap
                 .load(photosDatabase.getPhotoRightUrl())
                 .into(rightImage);
 
-        tagsView.setText(photosDatabase.getTag());
+        //tagsView.setText(photosDatabase.getTag());
 
         //set click listener on card view
         cardView.setOnClickListener(new View.OnClickListener() {

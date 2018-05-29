@@ -1,8 +1,7 @@
-package com.beloinc.abiti.main;
+package com.beloinc.abiti.utils;
 
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -37,6 +36,7 @@ public class RecyclerGridFragment extends Fragment {
     private CardContainerAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private List<PhotosDatabase> photosDatabaseList;
+    private String path;
     OnPublicationSelected publicationSelected;
 
     //Firebase
@@ -54,7 +54,7 @@ public class RecyclerGridFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        Log.d(TAG, "onAttach: fragment attached to main activity");
+        Log.d(TAG, "onAttach: fragment attached activity");
         try {
             publicationSelected = (OnPublicationSelected) context;
         } catch (ClassCastException e) {
@@ -97,6 +97,9 @@ public class RecyclerGridFragment extends Fragment {
         return view;
     }
 
+    public void setPath(String path) {
+        this.path = path;
+    }
 
     @Override
     public void onStop() {
