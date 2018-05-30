@@ -3,6 +3,7 @@ package com.beloinc.abiti.main;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,7 +20,6 @@ import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity implements RecyclerGridFragment.OnPublicationSelected {
@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerGridFragm
 
     private Context mContext;
     private Button mButton;
+    private FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,16 +129,20 @@ public class MainActivity extends AppCompatActivity implements RecyclerGridFragm
     }
 
     private void setupWidgets() {
-        mButton = findViewById(R.id.new_content);
+        //mButton = findViewById(R.id.new_content);
+        fab = findViewById(R.id.fab);
     }
 
     private void setupWidgetsClickListener(WidgetClickListener clickListener) {
-        mButton.setOnClickListener(clickListener);                          // HANDLE CLICK TO GO TO CREATION OF NEW PUBLICATION
+        // HANDLE CLICK TO GO TO CREATION OF NEW PUBLICATION
+        //mButton.setOnClickListener(clickListener);
+        fab.setOnClickListener(clickListener);
     }
 
 
+    // METHOD FROM INNER INTERFACE AT RECYCLERGRIDFRAGMENT TO HANDLE CLICKS AT A SINGLE PUBLICATION
     @Override
-    public void onPublicationSelected(PhotosDatabase publication) {        // METHOD FROM INNER INTERFACE AT RECYCLERGRIDFRAGMENT TO HANDLE CLICKS AT A SINGLE PUBLICATION
+    public void onPublicationSelected(PhotosDatabase publication) {
         Intent intent = new Intent(mContext, SinglePublicationActivity.class);
         intent.putExtra(GET_LEFT_DESCRIPTION, publication.getLeftDescription());
         intent.putExtra(GET_RIGHT_DESCRIPTION, publication.getRightDescription());
@@ -150,8 +155,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerGridFragm
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
-                case R.id.new_content:
-                    Log.d(TAG, "onClick: new publication button clicked");
+                case R.id.fab:
+                    Log.d(TAG, "onClick: new publication fab clicked");
                     Intent intent = new Intent(mContext, UploadActivity.class);
                     intent.putExtra("uid", userId);
                     startActivity(intent);

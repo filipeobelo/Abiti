@@ -3,6 +3,7 @@ package com.beloinc.abiti.utils;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -92,6 +93,20 @@ public class RecyclerGridFragment extends Fragment {
             }
         });
 
+        final FloatingActionButton fab = getActivity().findViewById(R.id.fab);
+        if (fab != null) {
+            mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
+                    if (dy > 0 && fab.getVisibility() == View.VISIBLE) {
+                        fab.hide();
+                    } else if (dy < 0 && fab.getVisibility() != View.VISIBLE) {
+                        fab.show();
+                    }
+                }
+            });
+        }
         attachDatabaseReadListener();
 
         return view;

@@ -172,15 +172,20 @@ public class UploadActivity extends AppCompatActivity {
     private void getEditTexts() {
         mLeftDescription = mLeftText.getText().toString();
         mRightDescription = mRightText.getText().toString();
-        mTags = mTagsText.getText().toString().split(" ");
-        mTagsList = Arrays.asList(mTags);
+        if (mTagsText.getText().toString().contains(" ")) {
+            mTags = mTagsText.getText().toString().split(" ");
+            mTagsList = Arrays.asList(mTags);
+        } else {
+            mTags[0] = mTagsText.getText().toString();
+        }
         description.put("leftDescription", mLeftDescription);
         description.put("rightDescription", mRightDescription);
     }
 
 
     private void uploadHelper() {
-        String pathLeft = "user_photos/" + UUID.randomUUID();
+        final String uuId = UUID.randomUUID().toString();
+        String pathLeft = "user_photos/" + "left" + uuId;
         final StorageReference mLeftPhotoReference = mStorage.getReference(pathLeft);
 
         setupProgress(true);
@@ -203,8 +208,8 @@ public class UploadActivity extends AppCompatActivity {
                     downloadLeftUrl = task.getResult();
                     photoUrls.put("leftUrl", downloadLeftUrl.toString());
 
-                    //Starting right image upload:
-                    String pathRight = "user_photos/" + UUID.randomUUID();
+                    //Starting right image upload
+                    String pathRight = "user_photos/" + "right" + uuId;
                     final StorageReference mRightPhotoReference = mStorage.getReference(pathRight);
                     UploadTask uploadTaskRight = mRightPhotoReference.putFile(selectedRightUrl);
                     Task<Uri> urlRightTask = uploadTaskRight.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
@@ -224,10 +229,15 @@ public class UploadActivity extends AppCompatActivity {
                                 downloadRightUrl = task.getResult();
                                 photoUrls.put("rightUrl", downloadRightUrl.toString());
 
-                                PhotosCloudDatabase photosCloudDatabase = new PhotosCloudDatabase(photoUrls, description, mTagsList, userId);
+                                PhotosCloudDatabase photosCloudDatabase = new PhotosCloudDatabase(photoUrls, description, mTagsList, userId, 0, 0);
+
+                                //for loop to update each hashtag at database with the publication **review this, maybe not the best way** (to many repeated data)
                                 for (int i = 0; i < mTagsList.size(); i++) {
-                                    sendToCloud(photosCloudDatabase, mTagsList.get(i));
+                                    String path = "/publications/tags/" + mTagsList.get(i) + "/" + uuId;
+                                    sendToCloud(photosCloudDatabase, path);
                                 }
+                                String path = "/users/" + userId;
+                                sendToCloud(photosCloudDatabase, path);
 
                             } else {
                                 Toast.makeText(UploadActivity.this, "Upload da publicação falhou, tente novamente.", Toast.LENGTH_SHORT).show();
@@ -241,14 +251,14 @@ public class UploadActivity extends AppCompatActivity {
         });
     }
 
-    private void sendToCloud(PhotosCloudDatabase photosCloudDatabase, String collectionPath) {
+    private void sendToCloud(PhotosCloudDatabase photosCloudDatabase, final String path) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("publications").document("tags").collection(collectionPath)
-                .add(photosCloudDatabase)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+        db.document(path)
+                .set(photosCloudDatabase)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Log.d(TAG, "onSuccess: Document written with ID: " + documentReference.getId());
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "onSuccess: Document written with path: " + path);
                         setupProgress(false);
                     }
                 })
@@ -271,37 +281,4 @@ public class UploadActivity extends AppCompatActivity {
         }
     }
 }
-
-    /*private void uploadHelper() {
-        String pathLeft = "user_photos/" + UUID.randomUUID();
-        StorageReference mLeftPhotoReference = mStorage.getReference(pathLeft);
-        mProgressBar.setVisibility(View.VISIBLE);
-        mUploadButton.setEnabled(false);
-        UploadTask uploadTaskLeft = mLeftPhotoReference.putFile(selectedLeftUrl);
-        uploadTaskLeft.addOnSuccessListener(UploadActivity.this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Log.d(TAG, "onSuccess: left photo uploaded successfully");
-                downloadLeftUrl = taskSnapshot.getDownloadUrl();
-
-                Log.d(TAG, "onSuccess: starting right photo upload");
-
-                //starting right photo upload
-                String pathRight = "user_photos/" + UUID.randomUUID();
-                StorageReference mRightPhotoReference = mStorage.getReference(pathRight);
-                UploadTask uploadTaskRight = mRightPhotoReference.putFile(selectedRightUrl);
-                uploadTaskRight.addOnSuccessListener(UploadActivity.this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        Log.d(TAG, "onSuccess: right photo uploaded successfully");
-                        downloadRightUrl = taskSnapshot.getDownloadUrl();
-                        PhotosDatabase photosDatabase = new PhotosDatabase(downloadLeftUrl.toString(), downloadRightUrl.toString(), mTags, mLeftDescription, mRightDescription);
-                        mPhotosUrlReference.push().setValue(photosDatabase);
-                        mProgressBar.setVisibility(View.GONE);
-                        mUploadButton.setEnabled(true);
-                    }
-                });
-            }
-        });
-    }*/
 

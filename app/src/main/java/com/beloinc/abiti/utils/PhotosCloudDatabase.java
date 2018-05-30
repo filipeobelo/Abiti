@@ -11,15 +11,19 @@ public class PhotosCloudDatabase {
     private Map<String, String> description = new HashMap<>();
     private List<String> tags = new ArrayList<>();
     private String userOwner;
+    private int countLeft;
+    private int countRight;
 
     public PhotosCloudDatabase() {
     }
 
-    public PhotosCloudDatabase(Map<String, String> photoUrls, Map<String, String> description, List<String> tags, String userOwner) {
+    public PhotosCloudDatabase(Map<String, String> photoUrls, Map<String, String> description, List<String> tags, String userOwner, int countLeft, int countRight) {
         this.photoUrls = photoUrls;
         this.description = description;
         this.tags = tags;
         this.userOwner = userOwner;
+        this.countLeft = countLeft;
+        this.countRight = countRight;
     }
 
     public Map<String, String> getPhotoUrls() {
@@ -36,5 +40,13 @@ public class PhotosCloudDatabase {
 
     public String getUserOwner() {
         return userOwner;
+    }
+
+    public int getCountLeft() {
+        return countLeft;
+    }
+
+    public int getCountRight() {
+        return countRight;
     }
 }
