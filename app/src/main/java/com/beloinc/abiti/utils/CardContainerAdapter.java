@@ -13,21 +13,22 @@ import com.beloinc.abiti.R;
 import com.bumptech.glide.Glide;
 
 import java.util.List;
+import java.util.Map;
 
 public class CardContainerAdapter extends RecyclerView.Adapter<CardContainerAdapter.ViewHolder> {
 
-    private List<PhotosDatabase> photosDatabaseList;
+    private List<PhotosCloudDatabase> photosDatabaseList;
     private Listener listener;
 
     public interface Listener {
-        public void onClick(PhotosDatabase publication);
+        public void onClick(PhotosCloudDatabase publication);
     }
 
     public void setListener (Listener listener){
         this.listener = listener;
     }
 
-    public CardContainerAdapter(List<PhotosDatabase> photosDatabaseList) {
+    public CardContainerAdapter(List<PhotosCloudDatabase> photosDatabaseList) {
         this.photosDatabaseList = photosDatabaseList;
     }
 
@@ -51,19 +52,21 @@ public class CardContainerAdapter extends RecyclerView.Adapter<CardContainerAdap
     public void onBindViewHolder(@NonNull CardContainerAdapter.ViewHolder holder, int position) {
         CardView cardView = holder.cardView;
 
-        final PhotosDatabase photosDatabase = photosDatabaseList.get(position);
+        final PhotosCloudDatabase photosDatabase = photosDatabaseList.get(position);
 
         //widgets
         ImageView leftImage = cardView.findViewById(R.id.image_left);
         ImageView rightImage = cardView.findViewById(R.id.image_right);
         //TextView tagsView = cardView.findViewById(R.id.text_tags);
 
+        Map<String, String> photoUrls = photosDatabase.getPhotoUrls();
+
         //widgets attribution
         Glide.with(leftImage.getContext())
-                .load(photosDatabase.getPhotoLeftUrl())
+                .load(photoUrls.get("leftUrl"))
                 .into(leftImage);
         Glide.with(rightImage.getContext())
-                .load(photosDatabase.getPhotoRightUrl())
+                .load(photoUrls.get("rightUrl"))
                 .into(rightImage);
 
         //tagsView.setText(photosDatabase.getTag());

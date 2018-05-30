@@ -18,7 +18,7 @@
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
-            <include layout="@layout/snippet_profile_toolbar" />
+            <include layout="@layout/snippet_main_toolbar" />
 
         </android.support.v7.widget.Toolbar>
 

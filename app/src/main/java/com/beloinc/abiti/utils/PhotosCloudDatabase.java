@@ -1,11 +1,12 @@
 package com.beloinc.abiti.utils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PhotosCloudDatabase {
+public class PhotosCloudDatabase implements Serializable{
 
     private Map<String, String> photoUrls = new HashMap<>();
     private Map<String, String> description = new HashMap<>();

@@ -3,6 +3,7 @@ package com.beloinc.abiti.utils;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -13,14 +14,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.beloinc.abiti.R;
-import com.beloinc.abiti.utils.CardContainerAdapter;
-import com.beloinc.abiti.utils.PhotosDatabase;
-import com.beloinc.abiti.utils.SpacesItemDecoration;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,16 +34,22 @@ public class RecyclerGridFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private CardContainerAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-    private List<PhotosDatabase> photosDatabaseList;
+    private List<PhotosCloudDatabase> photosDatabaseList;
     private String path;
+
+    //default spacing and number of columns, activity may change via setRecyclerLayout method
+    private int spacing = 5;
+    private int spanCount = 1;
+
+    //interface object
     OnPublicationSelected publicationSelected;
 
     //Firebase
-    private DatabaseReference databaseReference;
-    private ChildEventListener postListener;
+    private FirebaseFirestore db;
+
 
     public interface OnPublicationSelected {
-        public void onPublicationSelected (PhotosDatabase publication);
+        public void onPublicationSelected(PhotosCloudDatabase publication);
     }
 
     public RecyclerGridFragment() {
@@ -71,15 +75,37 @@ public class RecyclerGridFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_recycler_grid, container, false);
 
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("user_uploads");
+        db = FirebaseFirestore.getInstance();
 
-        // Initialize RecyclerView photos adapter
+        setupRecyclerView(view, inflater);
+
+        accessDatabase();
+
+        return view;
+    }
+
+    private void accessDatabase() {
+        db.collection(path)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                PhotosCloudDatabase photosCloudDatabase = document.toObject(PhotosCloudDatabase.class);
+                                photosDatabaseList.add(photosCloudDatabase);
+                                mAdapter.notifyItemInserted(photosDatabaseList.size() - 1);
+                            }
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+    }
+
+    private void setupRecyclerView(View view, LayoutInflater inflater) {
         photosDatabaseList = new ArrayList<>();
         mAdapter = new CardContainerAdapter(photosDatabaseList);
-
-        int spacing = 5;
-        int spanCount = 1;
-
         mRecyclerView = view.findViewById(R.id.recycler_grid);
         mLayoutManager = new GridLayoutManager(inflater.getContext(), spanCount);
         mRecyclerView.addItemDecoration(new SpacesItemDecoration(spanCount, spacing));
@@ -88,7 +114,7 @@ public class RecyclerGridFragment extends Fragment {
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.setListener(new CardContainerAdapter.Listener() {
             @Override
-            public void onClick(PhotosDatabase publication) {
+            public void onClick(PhotosCloudDatabase publication) {
                 publicationSelected.onPublicationSelected(publication);
             }
         });
@@ -107,9 +133,14 @@ public class RecyclerGridFragment extends Fragment {
                 }
             });
         }
-        attachDatabaseReadListener();
+    }
 
-        return view;
+    public void setSpacing(int spacing) {
+        this.spacing = spacing;
+    }
+
+    public void setSpanCount(int spanCount) {
+        this.spanCount = spanCount;
     }
 
     public void setPath(String path) {
@@ -126,46 +157,9 @@ public class RecyclerGridFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         Log.d(TAG, "onDestroyView: ");
-        detachDatabaseReadListener();
         clear();            // CLEAR RECYCLERVIEW WHEN FRAGMENT IS DESTROYED... POSSIBLE CHANGES HERE
     }
 
-
-    // ATTACH DATABASE LISTENER TO RETRIEVE INFORMATION FROM DATABASE SERVER
-    private void attachDatabaseReadListener() {
-        if (postListener == null) {
-            Log.d(TAG, "attachDatabaseReadListener: listener attached");
-            postListener = new ChildEventListener() {
-                @Override
-                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    PhotosDatabase post = dataSnapshot.getValue(PhotosDatabase.class);
-                    photosDatabaseList.add(post);
-                    mAdapter.notifyItemInserted(photosDatabaseList.size() - 1); //NOTIFY THE RECYCLER ADAPTER THAT NEW DATA IS BEING INSERTED
-                }
-                @Override
-                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                }
-                @Override
-                public void onChildRemoved(DataSnapshot dataSnapshot) {
-                }
-                @Override
-                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-                }
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                }
-            };
-            databaseReference.addChildEventListener(postListener);
-        }
-    }
-
-    private void detachDatabaseReadListener() {
-        if (postListener != null) {
-            Log.d(TAG, "detachDatabaseReadListener: listener detached");
-            databaseReference.removeEventListener(postListener);
-            postListener = null;
-        }
-    }
 
     private void clear() {
         int size = photosDatabaseList.size();

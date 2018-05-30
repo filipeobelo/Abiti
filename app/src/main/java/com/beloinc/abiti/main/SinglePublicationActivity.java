@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.beloinc.abiti.R;
 import com.beloinc.abiti.upload.UploadActivity;
+import com.beloinc.abiti.utils.PhotosCloudDatabase;
 import com.bumptech.glide.Glide;
 
 
@@ -35,26 +36,12 @@ public class SinglePublicationActivity extends AppCompatActivity {
         mContext = SinglePublicationActivity.this;
 
         Intent intent = getIntent();
-
-        // GET INFORMATION PASSED BY MAIN ACTIVITY
-        String photoLeftUrl = intent.getExtras().getString(MainActivity.GET_LEFT_URL);
-        String photoRightUrl = intent.getExtras().getString(MainActivity.GET_RIGHT_URL);
-        String leftDescription = intent.getExtras().getString(MainActivity.GET_LEFT_DESCRIPTION);
-        String rightDescription = intent.getExtras().getString(MainActivity.GET_RIGHT_DESCRIPTION);
+        PhotosCloudDatabase photosCloudDatabase = (PhotosCloudDatabase) intent.getSerializableExtra(MainActivity.PHOTO_OBJECT);
 
         setupWidgets();
         setupWidgetsClickListener(new WidgetClickListener());
+        updateWidgets(photosCloudDatabase);
 
-        Glide.with(mLeftImage.getContext())
-                .load(photoLeftUrl)
-                .into(mLeftImage);
-
-        Glide.with(mRightImage.getContext())
-                .load(photoRightUrl)
-                .into(mRightImage);
-
-        mLeftDescription.setText(leftDescription);
-        mRightDescription.setText(rightDescription);
     }
 
     private void setupWidgets() {
@@ -67,6 +54,19 @@ public class SinglePublicationActivity extends AppCompatActivity {
 
     private void setupWidgetsClickListener(WidgetClickListener clickListener) {
         mButton.setOnClickListener(clickListener);
+    }
+
+    private void updateWidgets(PhotosCloudDatabase photosCloudDatabase) {
+        Glide.with(mLeftImage.getContext())
+                .load(photosCloudDatabase.getPhotoUrls().get("leftUrl"))
+                .into(mLeftImage);
+
+        Glide.with(mRightImage.getContext())
+                .load(photosCloudDatabase.getPhotoUrls().get("rightUrl"))
+                .into(mRightImage);
+
+        mLeftDescription.setText(photosCloudDatabase.getDescription().get("leftDescription"));
+        mRightDescription.setText(photosCloudDatabase.getDescription().get("rightDescription"));
     }
 
 
