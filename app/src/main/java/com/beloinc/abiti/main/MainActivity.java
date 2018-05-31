@@ -29,8 +29,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerGridFragm
     //FIREBASE UI
     private static final int RC_SIGN_IN = 123;
 
-    //CONSTANT TO REFERENCE AT INTENT
-    public static final String PHOTO_OBJECT = "photo_object";
 
     //FIREBASE
     private FirebaseAuth.AuthStateListener mAuthStateListener;
@@ -114,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerGridFragm
         Fragment grid = getSupportFragmentManager().findFragmentByTag("grid");
         if (grid == null) {
             RecyclerGridFragment gridFragment = new RecyclerGridFragment();
-            gridFragment.setPath("/users");
+            gridFragment.setPath("/globalPublications");
             //USING FRAGMENT TO ADD FUTURE FUNCTIONALITY
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, gridFragment, "grid")
@@ -137,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerGridFragm
     @Override
     public void onPublicationSelected(PhotosCloudDatabase publication) {
         Intent intent = new Intent(mContext, SinglePublicationActivity.class);
-        intent.putExtra(PHOTO_OBJECT, publication);
+        intent.putExtra(SinglePublicationActivity.PHOTO_OBJECT, publication);
         startActivity(intent);
     }
 

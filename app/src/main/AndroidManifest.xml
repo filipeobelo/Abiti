@@ -33,9 +33,7 @@
             android:name=".main.ProfileActivity"
             android:label="@string/title_activity_profile"
             android:theme="@style/AppTheme" />
-        <activity
-            android:name=".auth.LoginActivity"
-            android:label="@string/title_activity_login"></activity>
+
     </application>
 
 </manifest>

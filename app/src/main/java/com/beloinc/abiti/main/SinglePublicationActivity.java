@@ -18,7 +18,9 @@ import com.bumptech.glide.Glide;
 
 public class SinglePublicationActivity extends AppCompatActivity {
 
-    private static final String TAG = "SinglePublicationActivi";
+    private static final String TAG = "SinglePublicationActivity";
+    //CONSTANT TO REFERENCE AT INTENT
+    public static final String PHOTO_OBJECT = "photo_object";
 
     private Context mContext;
     private ImageView mLeftImage;
@@ -36,7 +38,7 @@ public class SinglePublicationActivity extends AppCompatActivity {
         mContext = SinglePublicationActivity.this;
 
         Intent intent = getIntent();
-        PhotosCloudDatabase photosCloudDatabase = (PhotosCloudDatabase) intent.getSerializableExtra(MainActivity.PHOTO_OBJECT);
+        PhotosCloudDatabase photosCloudDatabase = (PhotosCloudDatabase) intent.getSerializableExtra(PHOTO_OBJECT);
 
         setupWidgets();
         setupWidgetsClickListener(new WidgetClickListener());

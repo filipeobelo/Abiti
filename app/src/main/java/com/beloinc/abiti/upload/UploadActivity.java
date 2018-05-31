@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -14,6 +15,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.beloinc.abiti.R;
+import com.beloinc.abiti.main.SinglePublicationActivity;
 import com.beloinc.abiti.utils.PhotosCloudDatabase;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Continuation;
@@ -46,9 +48,9 @@ public class UploadActivity extends AppCompatActivity {
 
     private ImageView mLeftImage;
     private ImageView mRightImage;
-    private EditText mLeftText;
-    private EditText mRightText;
-    private EditText mTagsText;
+    private EditText mLeftTextView;
+    private EditText mRightTextView;
+    private EditText mTagsTextView;
     private Button mUploadButton;
     private ProgressBar mProgressBar;
 
@@ -94,11 +96,11 @@ public class UploadActivity extends AppCompatActivity {
     private void setupWidgets() {
         mLeftImage = findViewById(R.id.image_left);
         mRightImage = findViewById(R.id.image_right);
-        mLeftText = findViewById(R.id.text_left);
-        mRightText = findViewById(R.id.text_right);
+        mLeftTextView = findViewById(R.id.text_left);
+        mRightTextView = findViewById(R.id.text_right);
         mUploadButton = findViewById(R.id.upload_button);
         mProgressBar = findViewById(R.id.progress_bar);
-        mTagsText = findViewById(R.id.upload_tags);
+        mTagsTextView = findViewById(R.id.upload_tags);
     }
 
     private void setupWidgetsClickListener(WidgetClickListener clickListener) {
@@ -134,19 +136,15 @@ public class UploadActivity extends AppCompatActivity {
                 //click on upload button
                 case R.id.upload_button:
                     Log.d(TAG, "onClick: upload button");
-                    getEditTexts();
                     if (selectedLeftUrl == null || selectedRightUrl == null) {
                         Toast.makeText(UploadActivity.this, "Não esqueça de selecionar as duas fotos :)", Toast.LENGTH_SHORT).show();
-                    } else if (selectedLeftUrl == selectedRightUrl) {
-                        Toast.makeText(UploadActivity.this, "Escolha imagens diferentes para publicar!!", Toast.LENGTH_SHORT).show();
-                    } else if (mLeftDescription.isEmpty() || mRightDescription.isEmpty()) {
-                        Toast.makeText(UploadActivity.this, "Faça uma descrição de cada foto!!", Toast.LENGTH_SHORT).show();
-                    } else if (mTags.length == 0) {
-                        Toast.makeText(UploadActivity.this, "Coloque hashtags para melhor identifcar sua publicação", Toast.LENGTH_SHORT).show();
+                        break;
+                    } else if (getEditTexts()) {
+                        break;
                     } else {
                         uploadHelper();
+                        break;
                     }
-                    break;
             }
         }
     }
@@ -169,17 +167,48 @@ public class UploadActivity extends AppCompatActivity {
     }
 
 
-    private void getEditTexts() {
-        mLeftDescription = mLeftText.getText().toString();
-        mRightDescription = mRightText.getText().toString();
-        if (mTagsText.getText().toString().contains(" ")) {
-            mTags = mTagsText.getText().toString().split(" ");
-            mTagsList = Arrays.asList(mTags);
-        } else {
-            mTags[0] = mTagsText.getText().toString();
+    private Boolean getEditTexts() {
+        View focusView = null;
+        boolean cancel = false;
+
+        String stringTags = mTagsTextView.getText().toString();
+        mLeftDescription = mLeftTextView.getText().toString();
+        mRightDescription = mRightTextView.getText().toString();
+
+        if (TextUtils.isEmpty(mLeftDescription)) {
+            mLeftTextView.setError(getString(R.string.error_description_required));
+            focusView = mLeftTextView;
+            cancel = true;
         }
-        description.put("leftDescription", mLeftDescription);
-        description.put("rightDescription", mRightDescription);
+
+        if (TextUtils.isEmpty(mRightDescription)) {
+            mRightTextView.setError(getString(R.string.error_description_required));
+            focusView = mRightTextView;
+            cancel = true;
+        }
+        if (TextUtils.isEmpty(stringTags)) {
+            mTagsTextView.setError(getString(R.string.error_tag_required));
+            focusView = mTagsTextView;
+            cancel = true;
+        }
+        if (cancel) {
+            // There was an error; don't attempt upload and focus the first
+            // form field with an error.
+            focusView.requestFocus();
+            return true;
+        } else {
+            description.put("leftDescription", mLeftDescription);
+            description.put("rightDescription", mRightDescription);
+            if (mTagsTextView.getText().toString().contains(" ")) {
+                mTags = mTagsTextView.getText().toString().split(" ");
+                mTagsList = Arrays.asList(mTags);
+            } else {
+                mTags = new String[1];
+                mTags[0] = mTagsTextView.getText().toString();
+                mTagsList = Arrays.asList(mTags);
+            }
+            return false;
+        }
     }
 
 
@@ -234,11 +263,12 @@ public class UploadActivity extends AppCompatActivity {
                                 //for loop to update each hashtag at database with the publication **review this, maybe not the best way** (to many repeated data)
                                 for (int i = 0; i < mTagsList.size(); i++) {
                                     String path = "/publications/tags/" + mTagsList.get(i) + "/" + uuId;
-                                    sendToCloud(photosCloudDatabase, path);
+                                    sendToCloud(photosCloudDatabase, path, false);
                                 }
-                                String path = "/users/" + userId;
-                                sendToCloud(photosCloudDatabase, path);
-
+                                String pathUser = "/users/" + userId + "/userPublications/" + uuId;
+                                sendToCloud(photosCloudDatabase, pathUser, false);
+                                String pathGlobal = "/globalPublications/" + uuId;
+                                sendToCloud(photosCloudDatabase, pathGlobal, true);
                             } else {
                                 Toast.makeText(UploadActivity.this, "Upload da publicação falhou, tente novamente.", Toast.LENGTH_SHORT).show();
                             }
@@ -251,7 +281,7 @@ public class UploadActivity extends AppCompatActivity {
         });
     }
 
-    private void sendToCloud(PhotosCloudDatabase photosCloudDatabase, final String path) {
+    private void sendToCloud(final PhotosCloudDatabase photosCloudDatabase, final String path, final boolean goToSingleActivity) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.document(path)
                 .set(photosCloudDatabase)
@@ -260,6 +290,12 @@ public class UploadActivity extends AppCompatActivity {
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "onSuccess: Document written with path: " + path);
                         setupProgress(false);
+                        if (goToSingleActivity) {
+                            Intent intent = new Intent(UploadActivity.this, SinglePublicationActivity.class);
+                            intent.putExtra(SinglePublicationActivity.PHOTO_OBJECT, photosCloudDatabase);
+                            startActivity(intent);
+                            finish();
+                        }
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {

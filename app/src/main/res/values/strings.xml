@@ -7,6 +7,10 @@
     <string name="title_activity_profile">ProfileActivity</string>
     <string name="title_activity_login">Sign in</string>
 
+    <!-- Strings related to upload -->
+    <string name="error_description_required">Faça uma descrição</string>
+    <string name="error_tag_required">Coloque hashtags para identificar sua publicação!!</string>
+
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password (optional)</string>
