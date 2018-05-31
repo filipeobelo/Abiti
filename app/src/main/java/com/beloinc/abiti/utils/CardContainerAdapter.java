@@ -24,7 +24,7 @@ public class CardContainerAdapter extends RecyclerView.Adapter<CardContainerAdap
         public void onClick(PhotosCloudDatabase publication);
     }
 
-    public void setListener (Listener listener){
+    public void setListener(Listener listener) {
         this.listener = listener;
     }
 
@@ -57,9 +57,19 @@ public class CardContainerAdapter extends RecyclerView.Adapter<CardContainerAdap
         //widgets
         ImageView leftImage = cardView.findViewById(R.id.image_left);
         ImageView rightImage = cardView.findViewById(R.id.image_right);
-        //TextView tagsView = cardView.findViewById(R.id.text_tags);
+        TextView tagsView = cardView.findViewById(R.id.text_tags);
 
         Map<String, String> photoUrls = photosDatabase.getPhotoUrls();
+        List<String> photoTags = photosDatabase.getTags();
+
+        if (photoTags != null) {
+            StringBuilder builder = new StringBuilder();
+            for (String s : photoTags) {
+                builder.append(s);
+            }
+            String stringTags = builder.toString();
+            tagsView.setText(stringTags);
+        }
 
         //widgets attribution
         Glide.with(leftImage.getContext())
@@ -69,7 +79,6 @@ public class CardContainerAdapter extends RecyclerView.Adapter<CardContainerAdap
                 .load(photoUrls.get("rightUrl"))
                 .into(rightImage);
 
-        //tagsView.setText(photosDatabase.getTag());
 
         //set click listener on card view
         cardView.setOnClickListener(new View.OnClickListener() {
