@@ -19,3 +19,9 @@
 </p>
 <p>Single publication</p>
 <img src="https://user-images.githubusercontent.com/38297512/41007040-fbf36e1c-68f1-11e8-9c63-aa9f57ad00fb.png" width = "150">
+<p>Keynote:</p>
+<ul>
+    <li>Images are loaded with Glide</li>
+    <li>Scrolling feed is populated via RecyclerView</li>
+    <li>Utility classes to be reused, like RecyclerGridFragment: the activity sends the path of the database to populate the RecyclerView and can choose if it will be a grid view or a linear view, so it can be reused along other functionalites at the app</li>
+</ul>
