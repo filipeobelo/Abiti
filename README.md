@@ -14,6 +14,14 @@
 <p>Main feed</p>
 <img src="https://user-images.githubusercontent.com/38297512/41006831-2061da46-68f1-11e8-8270-987e7c0516a9.png" width = "150">
 <p>New publication</p>
+<p>
 <img src="https://user-images.githubusercontent.com/38297512/41007044-ff9d299a-68f1-11e8-8239-3f117f08bdb0.png" width = "150"> <img src="https://user-images.githubusercontent.com/38297512/41007047-0225ffb6-68f2-11e8-9045-e77f6f183c63.png" width = "150">
+</p>
 <p>Single publication</p>
 <img src="https://user-images.githubusercontent.com/38297512/41007040-fbf36e1c-68f1-11e8-9c63-aa9f57ad00fb.png" width = "150">
+<p>Keynote:</p>
+<ul>
+    <li>Images are loaded with Glide</li>
+    <li>Scrolling feed is populated via RecyclerView</li>
+    <li>Utility classes to be reused, like RecyclerGridFragment: the activity sends the path of the database to populate the RecyclerView and can choose if it will be a grid view or a linear view, so it can be reused along other functionalites at the app</li>
+</ul>
