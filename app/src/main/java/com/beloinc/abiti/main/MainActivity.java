@@ -7,7 +7,11 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -29,7 +33,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerGridFragm
     //FIREBASE UI
     private static final int RC_SIGN_IN = 123;
 
-
     //FIREBASE
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private FirebaseAuth mFirebaseAuth;
@@ -47,6 +50,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerGridFragm
         mContext = MainActivity.this;
         mFirebaseAuth = FirebaseAuth.getInstance();
 
+        setToolbar();
+
         setupWidgets();
         setupWidgetsClickListener(new WidgetClickListener());
 
@@ -56,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerGridFragm
                 FirebaseUser mFireBaseUser = firebaseAuth.getCurrentUser();
                 if (mFireBaseUser != null) {
                     Log.d(TAG, "onAuthStateChanged: user signed in");
-                    onSignedInInitialize(mFireBaseUser.getUid());
+                    setRecyclerFeed(mFireBaseUser.getUid());
                 } else {
                     Log.d(TAG, "onAuthStateChanged: user not signed in, starting login activity");
                     //user signed out
@@ -107,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerGridFragm
         //clean fragments TBD
     }
 
-    private void onSignedInInitialize(String userId) {
+    private void setRecyclerFeed(String userId) {
         this.userId = userId;
         Fragment grid = getSupportFragmentManager().findFragmentByTag("grid");
         if (grid == null) {
@@ -150,6 +155,31 @@ public class MainActivity extends AppCompatActivity implements RecyclerGridFragm
                     startActivity(intent);
                     break;
             }
+        }
+    }
+
+    private void setToolbar() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.profile_menu:
+                Intent intent = new Intent(mContext, ProfileActivity.class);
+                startActivity(intent);
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 }
