@@ -257,7 +257,7 @@ public class UploadActivity extends AppCompatActivity {
                                 downloadRightUrl = task.getResult();
                                 photoUrls.put("rightUrl", downloadRightUrl.toString());
 
-                                PhotosCloudDatabase photosCloudDatabase = new PhotosCloudDatabase(photoUrls, description, mTagsList, userId, 0, 0);
+                                PhotosCloudDatabase photosCloudDatabase = new PhotosCloudDatabase(photoUrls, description, mTagsList, userId, 0, 0, uuId, null);
 
                                 //for loop to update each hashtag at database with the publication **review this, maybe not the best way** (to many repeated data)
                                 for (int i = 0; i < mTagsList.size(); i++) {

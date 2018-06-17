@@ -14,17 +14,21 @@ public class PhotosCloudDatabase implements Serializable{
     private String userOwner;
     private int countLeft;
     private int countRight;
+    private String docId;
+    private List<String> votersId;
 
     public PhotosCloudDatabase() {
     }
 
-    public PhotosCloudDatabase(Map<String, String> photoUrls, Map<String, String> description, List<String> tags, String userOwner, int countLeft, int countRight) {
+    public PhotosCloudDatabase(Map<String, String> photoUrls, Map<String, String> description, List<String> tags, String userOwner, int countLeft, int countRight, String docId, List<String> votersId) {
         this.photoUrls = photoUrls;
         this.description = description;
         this.tags = tags;
         this.userOwner = userOwner;
         this.countLeft = countLeft;
         this.countRight = countRight;
+        this.docId = docId;
+        this.votersId = votersId;
     }
 
     public Map<String, String> getPhotoUrls() {
@@ -49,5 +53,13 @@ public class PhotosCloudDatabase implements Serializable{
 
     public int getCountRight() {
         return countRight;
+    }
+
+    public String getDocId() {
+        return docId;
+    }
+
+    public List<String> getVotersId() {
+        return votersId;
     }
 }

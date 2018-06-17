@@ -18,7 +18,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".main.MainActivity">
+        <activity
+            android:name=".main.MainActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -27,11 +30,18 @@
         </activity>
         <activity
             android:name=".upload.UploadActivity"
-            android:label="@string/title_activity_upload" />
-        <activity android:name=".main.SinglePublicationActivity" />
+            android:configChanges="orientation"
+            android:label="@string/title_activity_upload"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".main.SinglePublicationActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".main.ProfileActivity"
+            android:configChanges="orientation"
             android:label="@string/title_activity_profile"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
 
     </application>

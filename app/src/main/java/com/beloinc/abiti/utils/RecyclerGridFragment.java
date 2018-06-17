@@ -35,7 +35,12 @@ public class RecyclerGridFragment extends Fragment {
     private CardContainerAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private List<PhotosCloudDatabase> photosDatabaseList;
+
+    //activities must set path
     private String path;
+
+    //default docId == not applicable
+    private String docId = "na";
 
     //default spacing and number of columns, activity may change via setRecyclerLayout method
     private int spacing = 5;
@@ -85,22 +90,24 @@ public class RecyclerGridFragment extends Fragment {
     }
 
     private void accessDatabase() {
-        db.collection(path)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                PhotosCloudDatabase photosCloudDatabase = document.toObject(PhotosCloudDatabase.class);
-                                photosDatabaseList.add(photosCloudDatabase);
-                                mAdapter.notifyItemInserted(photosDatabaseList.size() - 1);
+        if (docId.equals("na")) {
+            db.collection(path)
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    PhotosCloudDatabase photosCloudDatabase = document.toObject(PhotosCloudDatabase.class);
+                                    photosDatabaseList.add(photosCloudDatabase);
+                                    mAdapter.notifyItemInserted(photosDatabaseList.size() - 1);
+                                }
+                            } else {
+                                Log.d(TAG, "Error getting documents: ", task.getException());
                             }
-                        } else {
-                            Log.d(TAG, "Error getting documents: ", task.getException());
                         }
-                    }
-                });
+                    });
+        }
     }
 
     private void setupRecyclerView(View view, LayoutInflater inflater) {
@@ -145,6 +152,10 @@ public class RecyclerGridFragment extends Fragment {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public void setDocId(String docId) {
+        this.docId = docId;
     }
 
     @Override

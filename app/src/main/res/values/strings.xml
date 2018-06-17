@@ -11,4 +11,5 @@
 
     <!-- Strings related to menu -->
     <string name="profile">Minhas publicações</string>
+    <string name="sign_out">Sair</string>
 </resources>
