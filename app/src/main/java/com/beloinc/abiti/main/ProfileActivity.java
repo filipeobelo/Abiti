@@ -6,17 +6,17 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.util.Log;
 import android.view.View;
 
 import com.beloinc.abiti.R;
 import com.beloinc.abiti.utils.PhotosCloudDatabase;
 import com.beloinc.abiti.utils.RecyclerGridFragment;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class ProfileActivity extends AppCompatActivity implements RecyclerGridFragment.OnPublicationSelected {
+    private static final String TAG = "ProfileActivity";
 
     private Context mContext = ProfileActivity.this;
     private String userId;
@@ -24,9 +24,9 @@ public class ProfileActivity extends AppCompatActivity implements RecyclerGridFr
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        checkLogin();
         setContentView(R.layout.activity_profile);
 
-        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         setRecyclerFeed();
 
         setToolbar();
@@ -38,6 +38,18 @@ public class ProfileActivity extends AppCompatActivity implements RecyclerGridFr
             }
         });
 
+    }
+
+    private void checkLogin() {
+        Log.d(TAG, "checkLogin: ");
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (firebaseUser == null) {
+            Log.d(TAG, "checkLogin: user signed out");
+            finish();
+        } else {
+            Log.d(TAG, "checkLogin: user signed in");
+            userId = firebaseUser.getUid();
+        }
     }
 
     private void setRecyclerFeed() {
@@ -65,15 +77,4 @@ public class ProfileActivity extends AppCompatActivity implements RecyclerGridFr
         startActivity(intent);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.profile_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
-    }
 }

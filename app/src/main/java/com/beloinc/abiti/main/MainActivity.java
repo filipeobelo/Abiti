@@ -109,7 +109,12 @@ public class MainActivity extends AppCompatActivity implements RecyclerGridFragm
     }
 
     private void onSignedOutCleanup() {
-        //clean fragments TBD
+        Fragment grid = getSupportFragmentManager().findFragmentByTag("grid");
+        if (grid != null) {
+            getSupportFragmentManager().beginTransaction()
+                    .remove(grid)
+                    .commit();
+        }
     }
 
     private void setRecyclerFeed(String userId) {
@@ -177,6 +182,10 @@ public class MainActivity extends AppCompatActivity implements RecyclerGridFragm
             case R.id.profile_menu:
                 Intent intent = new Intent(mContext, ProfileActivity.class);
                 startActivity(intent);
+                return true;
+
+            case R.id.sign_out_menu:
+                AuthUI.getInstance().signOut(this);
                 return true;
 
             default:
