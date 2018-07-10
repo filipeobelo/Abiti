@@ -20,6 +20,12 @@ public class SpacesItemDecoration extends RecyclerView.ItemDecoration {
         int position = parent.getChildAdapterPosition(view);
         int column = position % spanCount;
 
+        //one column
+        if (spanCount == 1) {
+            outRect.left = 16;
+            outRect.right = 16;
+        }
+
         //no edges
         if (position >= spanCount) {
             outRect.top = spacing;

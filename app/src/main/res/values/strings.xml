@@ -12,4 +12,7 @@
     <!-- Strings related to menu -->
     <string name="profile">Minhas publicações</string>
     <string name="sign_out">Sair</string>
+
+    <!-- Strings related to application -->
+    <string name="new_publication">nova publicação</string>
 </resources>

@@ -42,7 +42,7 @@ public class RecyclerGridFragment extends Fragment {
     //default docId == not applicable
     private String docId = "na";
 
-    //default spacing and number of columns, activity may change via setRecyclerLayout method
+    //default spacing and number of columns, activity may change via setSpacing and setSpanCount methods
     private int spacing = 5;
     private int spanCount = 1;
 
@@ -54,7 +54,7 @@ public class RecyclerGridFragment extends Fragment {
 
 
     public interface OnPublicationSelected {
-        public void onPublicationSelected(PhotosCloudDatabase publication);
+        void onPublicationSelected(PhotosCloudDatabase publication);
     }
 
     public RecyclerGridFragment() {
@@ -142,6 +142,21 @@ public class RecyclerGridFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        //JUST TO TRACK FRAGMENT LIFECYCLE
+        Log.d(TAG, "onStop: fragment stopped");
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.d(TAG, "onDestroyView: ");
+        // CLEAR RECYCLERVIEW WHEN FRAGMENT IS DESTROYED... POSSIBLE CHANGES HERE
+        clear();
+    }
+
     public void setSpacing(int spacing) {
         this.spacing = spacing;
     }
@@ -156,19 +171,6 @@ public class RecyclerGridFragment extends Fragment {
 
     public void setDocId(String docId) {
         this.docId = docId;
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        Log.d(TAG, "onStop: fragment stopped");  //JUST TO TRACK FRAGMENT LIFECYCLE
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        Log.d(TAG, "onDestroyView: ");
-        clear();            // CLEAR RECYCLERVIEW WHEN FRAGMENT IS DESTROYED... POSSIBLE CHANGES HERE
     }
 
 

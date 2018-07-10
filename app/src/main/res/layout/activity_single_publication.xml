@@ -1,51 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".main.MainActivity">
+    tools:context=".main.SinglePublicationActivity">
 
-    <RelativeLayout
-        android:id="@+id/relLayout1"
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp">
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
 
-        <include layout="@layout/snippet_feed_top" />
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:theme="@style/AppTheme.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
-    </RelativeLayout>
+            <include layout="@layout/snippet_main_toolbar" />
 
-    <RelativeLayout
-        android:id="@+id/relLayout2"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/relLayout1"
-        android:layout_marginBottom="110dp">
+        </android.support.v7.widget.Toolbar>
 
-        <include layout="@layout/snippet_publication_center" />
+    </android.support.design.widget.AppBarLayout>
 
-    </RelativeLayout>
+    <include layout="@layout/content_single_publication" />
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:layout_above="@id/new_content"
-        android:layout_marginEnd="12dp"
-        android:layout_marginStart="12dp"
-        android:paddingTop="5dp">
-
-        <include layout="@layout/snippet_publication_pre_results" />
-
-    </RelativeLayout>
-
-
-    <Button
-        android:id="@+id/new_content"
-        style="@style/Widget.AppCompat.Button.Borderless.Colored"
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:text="nova publicação" />
-
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

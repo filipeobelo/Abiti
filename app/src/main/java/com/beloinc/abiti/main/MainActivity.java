@@ -118,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerGridFragm
         if (grid == null) {
             RecyclerGridFragment gridFragment = new RecyclerGridFragment();
             gridFragment.setPath("/globalPublications");
+            gridFragment.setSpacing(12);
             //USING FRAGMENT TO ADD FUTURE FUNCTIONALITY
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, gridFragment, "grid")

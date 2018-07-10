@@ -23,10 +23,9 @@
 
         </android.support.v7.widget.Toolbar>
 
-
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_profile" />
+    <include layout="@layout/content_container" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

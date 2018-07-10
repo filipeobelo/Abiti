@@ -7,7 +7,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -72,6 +76,8 @@ public class SinglePublicationActivity extends AppCompatActivity {
 
         mContext = SinglePublicationActivity.this;
 
+        setupToolbar();
+
         userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         db = FirebaseFirestore.getInstance();
 
@@ -86,6 +92,10 @@ public class SinglePublicationActivity extends AppCompatActivity {
 
     }
 
+    private void setupToolbar() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+    }
 
     private void setupWidgets() {
         mLeftImage = findViewById(R.id.image_left);
@@ -253,27 +263,42 @@ public class SinglePublicationActivity extends AppCompatActivity {
 
                 case R.id.button_left:
                     Log.d(TAG, "onClick: voted left");
-                    disableButtons(true);
+                    disableButtons();
                     updateVotes("countLeft");
                     break;
 
                 case R.id.button_right:
                     Log.d(TAG, "onClick: voted right");
-                    disableButtons(true);
+                    disableButtons();
                     updateVotes("countRight");
                     break;
             }
         }
     }
 
-    private void disableButtons(boolean b) {
-        if (b) {
-            mVoteLeft.setEnabled(false);
-            mVoteRight.setEnabled(false);
-        } else {
-            mVoteRight.setEnabled(true);
-            mVoteLeft.setEnabled(true);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.single_pub_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.profile_menu:
+                Intent intent = new Intent(mContext, ProfileActivity.class);
+                startActivity(intent);
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void disableButtons() {
+        mVoteLeft.setEnabled(false);
+        mVoteRight.setEnabled(false);
     }
 
 }
