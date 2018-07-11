@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -35,9 +36,13 @@ public class RecyclerGridFragment extends Fragment {
     private CardContainerAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private List<PhotosCloudDatabase> photosDatabaseList;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
-    //activities must set path
-    private String path;
+    //activities must set path, default is /globalPublications
+    /**
+     * MUST SAVE PATH AT SAVEDINSTANCESTATE, OR A BUG WILL HAPPEN
+     */
+    private String path = "/globalPublications";
 
     //default docId == not applicable
     private String docId = "na";
@@ -86,8 +91,21 @@ public class RecyclerGridFragment extends Fragment {
 
         accessDatabase();
 
+        mSwipeRefreshLayout = view.findViewById(R.id.swiperefresh);
+        mSwipeRefreshLayout.setOnRefreshListener(
+                new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        Log.d(TAG, "onRefresh: ");
+                        clear();
+                        accessDatabase();
+                    }
+                }
+        );
+
         return view;
     }
+
 
     private void accessDatabase() {
         if (docId.equals("na")) {
@@ -102,6 +120,7 @@ public class RecyclerGridFragment extends Fragment {
                                     photosDatabaseList.add(photosCloudDatabase);
                                     mAdapter.notifyItemInserted(photosDatabaseList.size() - 1);
                                 }
+                                mSwipeRefreshLayout.setRefreshing(false);
                             } else {
                                 Log.d(TAG, "Error getting documents: ", task.getException());
                             }
@@ -175,9 +194,8 @@ public class RecyclerGridFragment extends Fragment {
 
 
     private void clear() {
-        int size = photosDatabaseList.size();
         photosDatabaseList.clear();
         Log.d(TAG, "clear: is photosDatabaseList empty? " + photosDatabaseList.isEmpty());
-        mAdapter.notifyItemRangeRemoved(0, size);
+        mAdapter.notifyDataSetChanged();
     }
 }
