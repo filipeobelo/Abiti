@@ -1,5 +1,5 @@
 # Abiti
-<p>JAVA - ANDROID APPLICATION</p>
+<p>JAVA - ANDROID APPLICATION -> i'm working on a Kotlin project now</p>
 <p>Firebase - NoSQL DATABASE</p>
 
 <p>App summary: users send two images with a description so other users can compare which image they like the most, either the user that sent and the users that vote are anonymous.</p>
